@@ -16,6 +16,13 @@ installed, specifically it must have nagios::plugin::deploy functionality.
 
 You will need to have activated storedconfigs on the puppetmaster.
 
+You need to ensure that the PATH environment variable contains the appropriate
+directories else the root password will not be set correctly to the requested
+value. Since the variable is empty by default when running puppet, you need to
+have something similar to this somewhere in your manifests:
+
+    Exec { path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' }
+
 Special Notes
 =============
 
