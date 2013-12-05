@@ -1,0 +1,9 @@
+# THIS FILE IS MANAGED BY PUPPET
+[<%= @section -%>]
+<% @config.each do |key, value| -%>
+<% if value != '' -%>
+<%= key -%> = <%= value %>
+<% else -%>
+<%= key %>
+<% end -%>
+<% end %>
