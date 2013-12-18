@@ -29,8 +29,9 @@ define mysql::conf (
   include mysql::server::base
 
   file { "/etc/mysql/conf.d/${name}.cnf":
-    ensure   => $ensure,
-    content  => template('mysql/conf.erb'),
+    ensure  => $ensure,
+    content => template('mysql/conf.erb'),
+    notify  => Service['mysql'],
   }
 
 }
