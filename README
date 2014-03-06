@@ -61,6 +61,16 @@ Optimizing tables
 If you wish mysql to periodically optimize tables, set the
 "$mysql_optimize_cron = true" variable before you include mysql::server.
 
+By default, time of execution for the optimization script will be randomly
+chosen (and will stay consistant for a server) any day between midnight and
+7:00 AM. If you wish to force at least one value, you can use the following
+parameters to the mysql::server class (all values are used directly as a
+cronjob value so they should be set within cron value space):
+
+* optimize_day => sets the day of the week (integer value) during which the script will run.
+* optimize_hour => sets the hour at which the optimization script will run.
+* optimize_minute => sets the minute in the hour at which the script will run.
+
 Munin
 -----
 
