@@ -20,7 +20,7 @@ class mysql::server (
   }
 
   if $manage_munin and $::mysql_exists == 'true' {
-    if $munin_password == 'absent' {
+    if $munin_password == 'absent' and $::operatingsystem != debian {
       fail('need to set the munin password')
     }
     case $::operatingsystem {
