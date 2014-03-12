@@ -8,6 +8,9 @@ class mysql::server (
   $nagios_password_hash = 'absent',
   $backup_cron          = false,
   $optimize_cron        = false,
+  $optimize_hour        = fqdn_rand(7),
+  $optimize_minute      = fqdn_rand(60),
+  $optimize_day         = fqdn_rand(7),
   $backup_dir           = '/var/backups/mysql',
   $manage_backup_dir    = true,
   $nagios_notcp         = false
