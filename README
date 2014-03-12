@@ -46,6 +46,36 @@ grant tables.
 The my.cnf file will installed from one of many possible places, see
 manifests/server/base.pp for possible locations for managing this.
 
+Configuration snippets
+----------------------
+
+To make managing mysql configuration easier, you can use the define
+mysql::conf. Note, though that there currently is only the Debian default
+configuration file that includes files in /etc/mysql/conf.d/.
+
+For example:
+
+mysql::conf { 'test':
+  ensure  => present,
+  section => 'mysqld',
+  config  => {
+    table_cache => '15000',
+    skip_slave  => '',
+    something   => '""',
+  }
+}
+
+The above example shows two possibilities for empty values.
+
+ * If a value only has an empty value in the hash passed to the config
+   parameter, that will define a boolean option in mysql by simply mentioning
+   the option name with no equal sign. So in the above, you'd have a line that
+   contains only "skip_slave".
+
+ * If you need to declare a variable with an empty value (e.g. with the equal
+   sign), you can use two quotes as the option's value. In the above example,
+   you'd have a line that looks like "something=".
+
 Backups
 -------
 

@@ -92,4 +92,12 @@ class mysql::server::base {
     Mysql_user<<| tag == "mysql_${::fqdn}"  |>>
     Mysql_grant<<| tag == "mysql_${::fqdn}" |>>
   }
+
+  file { '/etc/mysql/conf.d':
+    ensure => directory,
+    owner  => 'root',
+    group  => 0,
+    mode   => '0755',
+  }
+
 }
