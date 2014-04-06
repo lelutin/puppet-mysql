@@ -1,5 +1,7 @@
 # setup a basic cronjob to backup mysql database
-class mysql::server::cron::backup {
+class mysql::server::cron::backup (
+  $ensure = present,
+) {
   if $mysql::server::manage_backup_dir {
     file { 'mysql_backup_dir':
       ensure  => directory,
@@ -12,6 +14,7 @@ class mysql::server::cron::backup {
   }
 
   cron { 'mysql_backup_cron':
+    ensure  => $ensure,
     command => "/usr/bin/mysqldump --default-character-set=utf8 --all-databases --create-options --flush-logs --lock-tables --single-transaction | gzip > ${mysql::server::backup_dir}/mysqldump.sql.gz && chmod 600 ${mysql::server::backup_dir}/mysqldump.sql.gz",
     user    => 'root',
     minute  => 0,

@@ -2,18 +2,21 @@
 class mysql::server::cron::optimize (
   $optimize_hour,
   $optimize_minute,
-  $optimize_day
+  $optimize_day,
+  $ensure = present,
 ) {
 
   file { 'mysql_optimize_script':
-    path    => '/usr/local/sbin/optimize_mysql_tables.rb',
-    source  => 'puppet:///modules/mysql/scripts/optimize_tables.rb',
-    owner   => root,
-    group   => 0,
-    mode    => '0700';
+    ensure => $ensure,
+    path   => '/usr/local/sbin/optimize_mysql_tables.rb',
+    source => 'puppet:///modules/mysql/scripts/optimize_tables.rb',
+    owner  => root,
+    group  => 0,
+    mode   => '0700';
   }
 
   cron { 'mysql_optimize_cron':
+    ensure  => $ensure,
     command => '/usr/local/sbin/optimize_mysql_tables.rb',
     user    => 'root',
     minute  => $optimize_minute,
