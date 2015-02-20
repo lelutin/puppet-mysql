@@ -123,8 +123,8 @@ Debian's /etc/mysql/debian.cnf.
 Nagios
 ------
 
-If you wish nagios to check mysql, you should set the variable "use_nagios" to 
-"true" in hiera along with the "nagios_check_mysql" variable to "true". A 
+If you wish nagios to check mysql, you should set the variable "manage_nagios" to
+"true" in hiera along with the "nagios_check_mysql" variable to "true". A
 password for the nagios mysql user will be created for you with reduced privileges
 used only for nagios checks. This will be what you passed as nagios_password_hash
 to mysql::server and should be a mysql md5 hash. These should be set before you
