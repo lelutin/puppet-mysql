@@ -25,12 +25,15 @@ must_have chown
 
 rootpw=$(grep password /root/.my.cnf | sed -e 's/^[^=]*= *\(.*\) */\1/')
 
+/usr/bin/mysqladmin -uroot --password="${rootpw}" status > /dev/null && echo "Nothing to do as the password already works" && exit 0
+
 /etc/init.d/mysql stop
 
 /usr/sbin/mysqld --skip-grant-tables --user=root --datadir=/var/lib/mysql --log-bin=/var/lib/mysql/mysql-bin &
 sleep 5
 mysql -u root mysql <<EOF
 UPDATE mysql.user SET Password=PASSWORD('$rootpw') WHERE User='root' AND Host='localhost';
+DELETE FROM mysql.user WHERE (User='root' AND Host!='localhost') OR USER='';
 FLUSH PRIVILEGES;
 EOF
 killall mysqld
@@ -38,6 +41,7 @@ sleep 15
 # chown to be on the safe side
 ls -al /var/lib/mysql/mysql-bin.* &> /dev/null
 [ $? == 0 ] && chown mysql.mysql /var/lib/mysql/mysql-bin.*
+chown -R mysql.mysql /var/lib/mysql/data/
 
 /etc/init.d/mysql start
 

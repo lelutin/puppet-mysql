@@ -8,10 +8,10 @@ class mysql::server::base {
     path    => '/etc/mysql/my.cnf',
     source  => [
       "puppet:///modules/site_mysql/${::fqdn}/my.cnf",
-      "puppet:///modules/site_mysql/my.cnf.${::operatingsystem}.{lsbdistcodename}",
+      "puppet:///modules/site_mysql/my.cnf.${::operatingsystem}.${::operatingsystemmajrelease}",
       "puppet:///modules/site_mysql/my.cnf.${::operatingsystem}",
       'puppet:///modules/site_mysql/my.cnf',
-      "puppet:///modules/mysql/config/my.cnf.${::operatingsystem}.{lsbdistcodename}",
+      "puppet:///modules/mysql/config/my.cnf.${::operatingsystem}.${::operatingsystemmajrelease}",
       "puppet:///modules/mysql/config/my.cnf.${::operatingsystem}",
       'puppet:///modules/mysql/config/my.cnf'
     ],
@@ -31,16 +31,10 @@ class mysql::server::base {
       owner   => mysql,
       group   => mysql,
       mode    => '0755';
-    'mysql_ibdata1':
-      path    => '/var/lib/mysql/data/ibdata1',
-      require => Package['mysql-server'],
-      before  => File['mysql_setmysqlpass.sh'],
-      owner   => mysql,
-      group   => mysql,
-      mode    => '0660';
     'mysql_setmysqlpass.sh':
       path    => '/usr/local/sbin/setmysqlpass.sh',
-      source  => "puppet:///modules/mysql/scripts/${::operatingsystem}/setmysqlpass.sh",
+      source  => ["puppet:///modules/mysql/scripts/${::operatingsystem}/setmysqlpass.sh.${::operatingsystemmajrelease}",
+                  "puppet:///modules/mysql/scripts/${::operatingsystem}/setmysqlpass.sh", ],
       require => Package['mysql-server'],
       owner   => root,
       group   => 0,
@@ -57,7 +51,6 @@ class mysql::server::base {
 
   exec { 'mysql_set_rootpw':
     command     => '/usr/local/sbin/setmysqlpass.sh',
-    unless      => 'mysqladmin -uroot status > /dev/null',
     require     => [ File['mysql_setmysqlpass.sh'], Service['mysql'] ],
     # this is for security so that we only change the password
     # if the password file itself has changed
@@ -70,11 +63,7 @@ class mysql::server::base {
   }
 
   if $mysql::server::optimize_cron {
-    class { 'mysql::server::cron::optimize':
-      optimize_hour   => $mysql::server::optimize_hour,
-      optimize_minute => $mysql::server::optimize_minute,
-      optimize_day    => $mysql::server::optimize_day,
-    }
+    include mysql::server::cron::optimize
   }
 
   service { 'mysql':
@@ -84,20 +73,8 @@ class mysql::server::base {
     require   => Package['mysql-server'],
   }
 
-  if $::mysql_exists == 'true' {
-    include mysql::server::account_security
-
-    # Collect all databases and users
-    Mysql_database<<| tag == "mysql_${::fqdn}" |>>
-    Mysql_user<<| tag == "mysql_${::fqdn}"  |>>
-    Mysql_grant<<| tag == "mysql_${::fqdn}" |>>
-  }
-
-  file { '/etc/mysql/conf.d':
-    ensure => directory,
-    owner  => 'root',
-    group  => 0,
-    mode   => '0755',
-  }
-
+  # Collect all databases and users
+  Mysql_database<<| tag == "mysql_${::fqdn}" |>>
+  Mysql_user<<| tag == "mysql_${::fqdn}"  |>>
+  Mysql_grant<<| tag == "mysql_${::fqdn}" |>>
 }
