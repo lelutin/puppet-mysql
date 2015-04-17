@@ -63,7 +63,11 @@ class mysql::server::base {
   }
 
   if $mysql::server::optimize_cron {
-    include mysql::server::cron::optimize
+    class { 'mysql::server::cron::optimize':
+      optimize_hour   => $mysql::server::optimize_hour,
+      optimize_minute => $mysql::server::optimize_minute,
+      optimize_day    => $mysql::server::optimize_day,
+    }
   }
 
   service { 'mysql':
