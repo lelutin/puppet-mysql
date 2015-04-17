@@ -77,8 +77,20 @@ class mysql::server::base {
     require   => Package['mysql-server'],
   }
 
-  # Collect all databases and users
-  Mysql_database<<| tag == "mysql_${::fqdn}" |>>
-  Mysql_user<<| tag == "mysql_${::fqdn}"  |>>
-  Mysql_grant<<| tag == "mysql_${::fqdn}" |>>
+  file { '/etc/mysql/conf.d':
+    ensure => directory,
+    owner  => 'root',
+    group  => 0,
+    mode   => '0755',
+  }
+
+  if str2bool($::mysql_exists) {
+    include mysql::server::account_security
+
+    # Collect all databases and users
+    Mysql_database<<| tag == "mysql_${::fqdn}" |>>
+    Mysql_user<<| tag == "mysql_${::fqdn}" |>>
+    Mysql_grant<<| tag == "mysql_${::fqdn}" |>>
+  }
+
 }
