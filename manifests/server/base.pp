@@ -57,17 +57,24 @@ class mysql::server::base {
     refreshonly => true,
   }
 
-  if $mysql::server::backup_cron {
-    include mysql::server::cron::backup
-    include mysql::server::backup_helpers
+  $backup_ensure = $mysql::server::backup_cron ? {
+    true  => present,
+    false => absent,
   }
 
-  if $mysql::server::optimize_cron {
-    class { 'mysql::server::cron::optimize':
-      optimize_hour   => $mysql::server::optimize_hour,
-      optimize_minute => $mysql::server::optimize_minute,
-      optimize_day    => $mysql::server::optimize_day,
-    }
+  class { 'mysql::server::cron::backup': ensure => $backup_ensure }
+  class { 'mysql::server::backup_helpers': ensure => $backup_ensure }
+
+  $cron_ensure = $mysql::server::optimize_cron ? {
+    true  => present,
+    false => absent,
+  }
+
+  class { 'mysql::server::cron::optimize':
+    ensure          => $cron_ensure,
+    optimize_hour   => $mysql::server::optimize_hour,
+    optimize_minute => $mysql::server::optimize_minute,
+    optimize_day    => $mysql::server::optimize_day,
   }
 
   service { 'mysql':
