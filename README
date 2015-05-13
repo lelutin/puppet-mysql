@@ -31,9 +31,6 @@ Special Notes
 By using this module, the following users will be automatically removed, if they
 exist: "root@${fqdn}", "root@127.0.0.1", "@${fqdn}", "@localhost", "@%"
 
-If you require any of these, you can subclass class
-mysql::server::account_security to override this.
-
 Mysql Server
 ============
 

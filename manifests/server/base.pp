@@ -92,8 +92,6 @@ class mysql::server::base {
   }
 
   if str2bool($::mysql_exists) {
-    include mysql::server::account_security
-
     # Collect all databases and users
     Mysql_database<<| tag == "mysql_${::fqdn}" |>>
     Mysql_user<<| tag == "mysql_${::fqdn}" |>>
