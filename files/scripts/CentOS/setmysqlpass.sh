@@ -24,7 +24,7 @@ must_have chown
 
 rootpw=$(grep password /root/.my.cnf | sed -e 's/^[^=]*= *\(.*\) */\1/')
 
-/usr/bin/mysqladmin -uroot --password="${rootpw}" status > /dev/null && echo "Nothing to do as the password already works" && exit 0
+/usr/bin/mysqladmin --defaults-file=/root/.my.cnf status > /dev/null && echo "Nothing to do as the password already works" && exit 0
 
 /usr/bin/systemctl stop mariadb
 
