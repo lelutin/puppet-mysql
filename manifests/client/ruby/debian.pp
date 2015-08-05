@@ -1,6 +1,9 @@
 # debian ruby client
 class mysql::client::ruby::debian {
-  package { 'libmysql-ruby':
-    ensure => present,
+  if $operatingsystemmajversion >= 7 {
+    $package = 'ruby-mysql'
+  } else {
+    $package = 'libmysql-ruby'
   }
+  ensure_packages([ $package ])
 }
