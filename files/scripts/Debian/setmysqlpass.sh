@@ -27,7 +27,13 @@ rootpw=$(grep password /root/.my.cnf | sed -e 's/^[^=]*= *\(.*\) */\1/')
 
 /usr/bin/mysqladmin --defaults-file=/root/.my.cnf status > /dev/null && echo "Nothing to do as the password already works" && exit 0
 
-/etc/init.d/mysql stop
+if [ -x /etc/init.d/mysql ]; then
+    /etc/init.d/mysql stop
+elif [ -e /lib/systemd/system/mariadb.service ]; then
+    systemctl stop mariadb
+else
+    exit 1
+fi
 
 /usr/sbin/mysqld --skip-grant-tables --user=root --datadir=/var/lib/mysql --log-bin=/var/lib/mysql/mysql-bin &
 sleep 5
@@ -43,5 +49,11 @@ ls -al /var/lib/mysql/mysql-bin.* &> /dev/null
 [ $? == 0 ] && chown mysql.mysql /var/lib/mysql/mysql-bin.*
 chown -R mysql.mysql /var/lib/mysql/data/
 
-/etc/init.d/mysql start
+if [ -x /etc/init.d/mysql ]; then
+    /etc/init.d/mysql start
+elif [ -e /lib/systemd/system/mariadb.service ]; then
+    systemctl start mariadb
+else
+    exit 1
+fi
 
