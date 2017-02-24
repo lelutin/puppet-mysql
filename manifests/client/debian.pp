@@ -1,6 +1,12 @@
 # debian client name
 class mysql::client::debian inherits mysql::client::base {
-  Package['mysql'] {
-    name => 'mysql-client',
+  if $::operatingsystemmajrelease >= 9 {
+    Package[mysql]{
+      name => 'mariadb-client'
+    }
+  } else {
+    Package['mysql'] {
+      name => 'mysql-client',
+    }
   }
 }

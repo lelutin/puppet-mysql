@@ -1,5 +1,11 @@
 # debian specific stuff
 class mysql::server::debian inherits mysql::server::clientpackage {
+  if $::operatingsystemmajrelease >= 9 {
+    Package['mysql-server']{
+      name  => 'mariadb-server',
+    }
+  }
+
   File['mysql_data_dir'] {
     path => '/var/lib/mysql',
   }
